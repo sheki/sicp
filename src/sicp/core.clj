@@ -127,5 +127,50 @@ failed-protagonist-names
     :else (+ (pascal (- row 1) col) (pascal (- row 1) (- col 1)))))
 
 
+(defn sum 
+  [term a next b]
+  (if (> a b)
+    0
+    (+ (term a)
+       (sum term (next a) next b))))
 
+(defn cube
+  [x]
+  (* x x x))
 
+(defn integral
+  [f a b dx]
+  (defn add-dx [x] (+ x dx))
+  (* (sum f (+ a  (/ dx 2.0)) add-dx b)
+     dx))
+
+(defn simpson 
+  [f a b n]
+  (def h (/ (- b a) n))
+  (defn y [k]
+    (f (+ a (* k h))))
+  (defn term [x] 
+    (cond (odd? x) (* 4 (y x))
+          (or (= x 0) (= x n)) (y x)
+          :else (* 2 (y x))))
+  (/ (* h (sum term 0 inc n)) 3))
+
+(defn sumiter 
+  [term a next b]
+  (defn iter [a result]
+    (if (= a b) 
+      (+ result (term a))
+      (iter (next a) (+ result (term a)))))
+  (iter a 0))
+
+; 1.30
+(defn simpsoniter
+  [f a b n]
+  (def h (/ (- b a) n))
+  (defn y [k]
+    (f (+ a (* k h))))
+  (defn term [x] 
+    (cond (odd? x) (* 4 (y x))
+          (or (= x 0) (= x n)) (y x)
+          :else (* 2 (y x))))
+  (/ (* h (sumiter term 0 inc n)) 3))
