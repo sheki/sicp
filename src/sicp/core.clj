@@ -174,3 +174,71 @@ failed-protagonist-names
           (or (= x 0) (= x n)) (y x)
           :else (* 2 (y x))))
   (/ (* h (sumiter term 0 inc n)) 3))
+
+; 1.31
+(defn product
+  [term a next b]
+  (if (= a b)
+    b
+    (* (term a)
+       (product term (next a) next b))))
+
+(defn factorial
+  [n]
+  (product identity 1 inc n))
+
+(defn productiter 
+  [term a next b]
+  (defn iter [a result]
+    (if (= a b) 
+      (* result (term a))
+      (iter (next a) (* result (term a)))))
+  (iter a 1))
+
+(defn factorialiter
+  [n]
+  (productiter identity 1 inc n))
+
+
+(defn pi4
+  [n]
+  (defn num [x]
+    (cond 
+      (= x 0) 2
+      (odd? x) (+ 2 (num (dec x)))
+      :else (num (dec x))))
+
+  (defn denom [x]
+    (cond 
+      (= x 0) 3
+      (even? x) (+ 2 (denom (dec x)))
+      :else (denom (dec x))))
+  (/ (product num 0 inc n) 
+     (product denom 0 inc n)))
+
+; 1.32
+
+(defn accumulate
+  [combiner null-value term a next b]
+  (defn iter [a result]
+    (if (= a b) 
+      (combiner result (term a))
+      (iter (next a) (* result (term a)))))
+  (iter a null-value))
+
+(defn factorial2
+  [n]
+  (accumulate * 1 identity 1 inc n))
+
+; 1.32 accumulate recursive
+(defn accumrecursive
+  [combiner null-value term a next b]
+  (if (> a b)
+    null-value
+    (combiner (term a)
+       (accumrecursive combiner null-value term (next a) next b))))
+
+(defn factorial3
+  [n]
+  (accumrecursive * 1 identity 1 inc n))
+
