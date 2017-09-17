@@ -1,5 +1,6 @@
 (ns sicp.core
-  (:gen-class))
+(:require [clojure.math.numeric-tower :as math]))
+
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -288,3 +289,8 @@ failed-protagonist-names
          next
         (tryy next))))
   (tryy first-guess))
+
+(defn log [x] (Math/log x))
+;(fixed-point (fn [x] (/ (log 1000) (log x))) 111)
+
+
