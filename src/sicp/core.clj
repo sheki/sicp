@@ -1,6 +1,5 @@
 (ns sicp.core
-(:require [clojure.math.numeric-tower :as math]))
-
+  (:require [clojure.math.numeric-tower :as math]))
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -286,11 +285,38 @@ failed-protagonist-names
   (defn tryy [guess]
     (let [next (f guess)]
       (if (close-enough? guess next)
-         next
+        next
         (tryy next))))
   (tryy first-guess))
 
 (defn log [x] (Math/log x))
 ;(fixed-point (fn [x] (/ (log 1000) (log x))) 111)
+
+; 1.41
+(defn double
+  [f]
+  (fn [x] (f (f x))))
+
+;1.42
+(defn compose
+  [f g]
+  (fn [x] (f (g x))))
+
+;1.43
+(defn repeated-helper
+  [f ag n]
+  (if (= n 1) ag (repeated-helper f (compose f ag) (- n 1))))
+(defn repeated
+  [f n]
+  (repeated-helper f f n))
+
+;1.44 
+(defn smooth
+  [f dx]
+  (fn [x] (/ (+ (f (- x dx)) (f x) (f (+ x dx))))))
+
+(defn nsmooth
+  [f dx n]
+  (repeated (smooth dx) n))
 
 
