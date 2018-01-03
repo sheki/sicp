@@ -319,4 +319,87 @@ failed-protagonist-names
   [f dx n]
   (repeated (smooth dx) n))
 
+; 2.1
+(defn pair
+  [a b]
+  [a b])
+
+(defn make-rat
+  [n d]
+  (cond
+    (and (> n 0) (> d 0)) (pair n d)
+    (and (> n 0) (< d 0)) (pair (* -1 n) (* -1 d))
+    (and (< n 0) (< d 0)) (pair (* -1 n) (* -1 d))
+    (and (< n 0) (> d 0)) (pair n d)))
+
+(defn numer [rat] (first rat))
+(defn denom [rat] (second rat))
+
+(defn print-rat
+  [x]
+  (print (numer x))
+  (print "/")
+  (print (denom x)))
+
+;2.1
+(defn make-point
+  [x y]
+  (pair x y))
+
+(defn x-point [p] (first p))
+(defn y-point [p] (second p))
+
+(defn make-segment
+  [p1 p2]
+  (pair (apply make-point p1) (apply make-point p2)))
+
+(defn midpoint-segment
+  [s]
+  (make-point
+   (/ (+ (x-point (first s)) (x-point (second s))) 2)
+   (/ (+ (y-point (first s)) (y-point (second s))) 2)))
+
+(defn print-point
+  [p]
+  (print "(")
+  (print (x-point p))
+  (print ",")
+  (print (y-point p))
+  (print ")"))
+
+;2.3
+(defn make-rectangle
+  [p1 p2 p3 p4]
+  [(pair p1 p2) (pair p3 p4)])
+
+(defn rect-p1
+  [rect] (first (first rect)))
+
+(defn rect-p2
+  [rect] (second (first rect)))
+
+(defn rect-p3
+  [rect] (first (second rect)))
+
+(defn rect-p4
+  [rect] (second (second rect)))
+
+(defn segment-length
+  [p1 p2]
+  (sqrt
+   (+
+    (square (- (x-point p1) (x-point p2)))
+    (square (- (y-point p1) (y-point p2))))))
+
+(defn area-rect
+  [rect]
+  (*
+   (segment-length (rect-p1 rect) (rect-p2 rect))
+   (segment-length (rect-p2 rect) (rect-p3 rect))))
+
+(defn peri-rect
+  [rect]
+  (* 2 (+
+        (segment-length (rect-p1 rect) (rect-p2 rect))
+        (segment-length (rect-p2 rect) (rect-p3 rect)))))
 
