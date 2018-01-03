@@ -403,3 +403,4 @@ failed-protagonist-names
         (segment-length (rect-p1 rect) (rect-p2 rect))
         (segment-length (rect-p2 rect) (rect-p3 rect)))))
 
+(area-rect (make-rectangle (make-point 0 0) (make-point 3 0) (make-point 3,5) (make-point 0 5)))
