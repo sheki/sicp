@@ -404,3 +404,30 @@ failed-protagonist-names
         (segment-length (rect-p2 rect) (rect-p3 rect)))))
 
 (area-rect (make-rectangle (make-point 0 0) (make-point 3 0) (make-point 3,5) (make-point 0 5)))
+
+;2.4
+(defn cons
+  [x y]
+  (fn [m] (m x y)))
+(defn car
+  [z]
+  (z (fn [p q] p)))
+(defn cdr
+  [z]
+  (z (fn [p q] q)))
+
+;2.5
+
+(defn pow [x y]
+  (if (= y 0) 1
+      (* x (pow x (- y 1)))))
+
+(defn cons_p [x y]
+  (* (pow 2 x) (pow 3 x)))
+
+(defn car_p [x]
+  (if (= (mod x 2) 0) (+ 1 (car_p (/ x 2))) 0))
+
+(defn cdr_p [x]
+  (if (= (mod x 3) 0) (+ 1 (car_p (/ x 3)))
+      0))
