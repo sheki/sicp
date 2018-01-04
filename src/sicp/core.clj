@@ -431,3 +431,21 @@ failed-protagonist-names
 (defn cdr_p [x]
   (if (= (mod x 3) 0) (+ 1 (car_p (/ x 3)))
       0))
+
+;2.6
+
+(defn zero []
+  (fn [f] (fn [x] x)))
+
+(defn one []
+  (fn [f] (fn [x] (f x))))
+
+(defn two []
+  (fn [f] (fn [x] (f (f x)))))
+
+(defn add-1 [n]
+  (fn [f] (fn [x] ((n f) x))))
+
+(defn add [m n]
+  (fn [f] (fn [x] ((n f) ((m f) x)))))
+
