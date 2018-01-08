@@ -406,7 +406,7 @@ failed-protagonist-names
 (area-rect (make-rectangle (make-point 0 0) (make-point 3 0) (make-point 3,5) (make-point 0 5)))
 
 ;2.4
-(defn cons
+(defn cons_mine
   [x y]
   (fn [m] (m x y)))
 (defn car
@@ -417,10 +417,8 @@ failed-protagonist-names
   (z (fn [p q] q)))
 
 ;2.5
-
-(defn pow [x y]
-  (if (= y 0) 1
-      (* x (pow x (- y 1)))))
+(defn pow [x y] (if (= y 0) 1
+                    (* x (pow x (- y 1)))))
 
 (defn cons_p [x y]
   (* (pow 2 x) (pow 3 x)))
@@ -449,3 +447,49 @@ failed-protagonist-names
 (defn add [m n]
   (fn [f] (fn [x] ((n f) ((m f) x)))))
 
+(defn make-interval [x y] (cons_mine x y))
+(defn upper-bound [x] (cdr x))
+(defn lower-bound [x] (car x))
+
+(defn add-interval [x y]
+  (make-interval (+ (lower-bound x) (lower-bound y))
+                 (+ (upper-bound x) (upper-bound y))))
+(defn sub-interval [x y]
+  (make-interval (- (lower-bound x) (lower-bound y))
+                 (- (upper-bound x) (upper-bound y))))
+
+; 2.12
+(defn make-center-width [c w]
+  (make-interval (- c w) (+ c w)))
+(defn center [i]
+  (/ (+ (lower-bound i) (upper-bound i)) 2))
+(defn width [i]
+  (/ (- (upper-bound i) (lower-bound i)) 2))
+
+(defn make-center-percent [c p]
+  (make-interval (- c (* (/ p 100.0) c) (+ c (* (/ p 100.0) c)))))
+
+(defn percent [i]
+  (* 100.0 (/ (width i)  (center i))))
+
+(defn list-ref [items n]
+  (if (= n 0)
+    (first items)
+    (list-ref (rest items) (- n 1))))
+
+(defn length  [items]
+  (if (empty? items)
+    0
+    (+ 1 (length (rest items)))))
+
+(defn length-iter [items]
+  (defn length-iter [a count]
+    (if (empty? a)
+      count
+      (length-iter (rest a) (+ 1 count))))
+  (length-iter items 0))
+
+(defn append [list1 list2]
+  (if (empty? list1)
+    list2
+    (cons (first list1) (append (rest list1) list2))))
