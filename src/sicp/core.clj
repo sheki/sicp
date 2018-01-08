@@ -493,3 +493,17 @@ failed-protagonist-names
   (if (empty? list1)
     list2
     (cons (first list1) (append (rest list1) list2))))
+
+; 2.17
+(defn last-pair [l]
+  (if (= (length (rest l)) 1) (rest l) 
+    (last-pair (rest l))))
+
+; 2.18
+
+(defn reverse [inp]
+  (defn rev-helper [list1 list2]
+    (if (empty? list1) 
+      list2
+      (rev-helper (rest list1) (cons (first list1) list2))))
+  (rev-helper inp (list)))
