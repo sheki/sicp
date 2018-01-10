@@ -496,14 +496,47 @@ failed-protagonist-names
 
 ; 2.17
 (defn last-pair [l]
-  (if (= (length (rest l)) 1) (rest l) 
-    (last-pair (rest l))))
+  (if (= (length (rest l)) 1) (rest l)
+      (last-pair (rest l))))
 
 ; 2.18
 
 (defn reverse [inp]
   (defn rev-helper [list1 list2]
-    (if (empty? list1) 
+    (if (empty? list1)
       list2
       (rev-helper (rest list1) (cons (first list1) list2))))
   (rev-helper inp (list)))
+
+;2.20
+(defn same-parity [x & y]
+  (if (empty? y) true
+      (if (= (even? x)  (even? (first y))) (apply same-parity x (rest y))
+          false)))
+
+(defn map [proc items]
+  (if (empty? items)
+    nil
+    (cons (proc (first items))
+          (map proc (rest items)))))
+
+(defn square-list [items]
+  (map  square items))
+
+;2.23
+(defn for-each [proc items]
+  (if (empty? items)
+    nil
+    (do
+      (proc (first items))
+      (for-each proc (rest items)))))
+
+; 2.27
+(defn deep-reverse [items]
+  (defn rev-helper [list1 list2]
+    (cond
+      (empty? list1) list2
+      (seq? (first list1)) (rev-helper (rest list1) (cons (deep-reverse (first list1)) list2))
+      :else (rev-helper (rest list1) (cons (first list1) list2))))
+  (rev-helper items (list)))
+
