@@ -540,3 +540,35 @@ failed-protagonist-names
       :else (rev-helper (rest list1) (cons (first list1) list2))))
   (rev-helper items (list)))
 
+; 2.28
+(def x (list (list 1 2) (list 3 (list 5 6))))
+(defn fringe [items]
+  (cond
+    (empty? items) nil
+    (seq? (first items)) (append (fringe (first items)) (fringe (rest items)))
+    :else (cons (first items) (fringe (rest items)))))
+;2.29
+(defn make-mobile [left right]
+  (list left right))
+
+(defn make-branch [length structure]
+  (list length structure))
+
+(defn left-branch [mobile]
+  (first mobile))
+(defn right-branch [mobile]
+  (first (rest mobile)))
+(defn branch-length [branch]
+  (first branch))
+(defn branch-structure [branch]
+  (first (rest branch)))
+
+(defn total-weight [mobile]
+  (let [r_struc (branch-structure (right-branch mobile))
+        l_struc (branch-structure (left-branch mobile))]
+    (cond
+      (and (seq? r_struc) (seq? l_struc)) (+ (total-weight r_struc) (total-weight l_struc))
+      (seq? r_struc) (+ (total-weight r_struc) l_struc)
+      (seq? l_struc) (+ (total-weight l_struc) r_struc)
+      :else (+ l_struc r_struc))))
+
