@@ -572,3 +572,24 @@ failed-protagonist-names
       (seq? l_struc) (+ (total-weight l_struc) r_struc)
       :else (+ l_struc r_struc))))
 
+; 2.30
+(defn square-tree [tree]
+  (cond (nil? tree) nil
+        (seq? tree) (cons (square-tree (first tree))
+                          (square-tree (next tree)))
+        :else (* tree tree)))
+
+(defn square-tree [tree]
+  (if (seq? tree)
+    (map square-tree tree)
+    (* tree tree)))
+
+;;; Exercise 2.31
+
+(defn tree-map [f tree]
+  (if (seq? tree)
+    (map f tree)
+    (f tree)))
+
+(defn square-list [tree]
+  (tree-map square tree))
