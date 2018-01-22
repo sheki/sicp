@@ -514,7 +514,7 @@ failed-protagonist-names
       (if (= (even? x)  (even? (first y))) (apply same-parity x (rest y))
           false)))
 
-(defn map [proc items]
+(defn my-map [proc items]
   (if (empty? items)
     nil
     (cons (proc (first items))
@@ -593,3 +593,46 @@ failed-protagonist-names
 
 (defn square-list [tree]
   (tree-map square tree))
+
+(defn subsets [s]
+  (if (empty? s) '(())
+      (let [remaining (subsets (next s))]
+        (concat remaining (map (fn [x] (cons (first s) x)) remaining)))))
+
+; 2.33
+(defn new-map [p sequence]
+  (reduce (fn [x y] (concat x (list (p y)))) nil sequence))
+
+(defn new-append [seq1 seq2]
+  (reduce conj  seq2 (reverse seq1)))
+
+(defn new-length [coll]
+  (reduce (fn [x y] (inc x)) 0 coll))
+
+(defn accumulate [op init coll]         ;foldr
+  (if (nil? coll) init
+      (op (first coll)
+          (accumulate op init (next coll)))))
+
+(defn horner-eval [x coefficient-sequence]
+  (accumulate #(+ (* %2 x) %1) 0 coefficient-sequence))
+
+(defn accumulate-n [op init seqs]
+  (if (nil? (first seqs))
+    nil
+    (cons (accumulate op init (map first seqs))
+          (accumulate-n op init (map rest seqs)))))
+
+(defn dot-product [v w]
+  (accumulate + 0 (map * v w)))
+
+(defn matrix-*-vector [m v]
+  (map (partial dot-product v) m))
+
+(defn matrix-*-matrix [m n]
+  (let [cols (transpose n)]
+    (map (fn [row] (map #(dot-product row %) cols)) m)))
+
+(defn transpose [m]
+  (accumulate-n cons nil m))
+
