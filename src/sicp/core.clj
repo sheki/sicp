@@ -622,17 +622,84 @@ failed-protagonist-names
     nil
     (cons (accumulate op init (map first seqs))
           (accumulate-n op init (map rest seqs)))))
+;;
+;; (defn dot-product [v w]
+;;   (accumulate + 0 (map * v w)))
+;;
+;; (defn matrix-*-vector [m v]
+;;   (map (partial dot-product v) m))
+;;
+;; (defn matrix-*-matrix [m n]
+;;   (let [cols (transpose n)]
+;;     (map (fn [row] (map #(dot-product row %) cols)) m)))
+;;
+;; (defn transpose [m]
+;;   (accumulate-n cons nil m))
+;;
+(defn equal? [l1 l2]
+  (let [f1 (first l1) f2 (first l2) r1 (rest l1) r2 (rest l2)]
+    (cond (and (empty? l1) (empty l2)) true
+          (and (seq? f1) (seq? f2)) (and (equal? f1 f2) (equal? r1 r2))
+          (and (not (seq? f1)) (not (seq? f2))) (and (= f1 f2) (equal? r1 r2))
+          :else false)))
 
-(defn dot-product [v w]
-  (accumulate + 0 (map * v w)))
+(defn variable? [x] (symbol? x))
 
-(defn matrix-*-vector [m v]
-  (map (partial dot-product v) m))
+(defn same-variable? [v1 v2]
+  (and (variable? v1) (variable? v2) (= v1 v2)))
 
-(defn matrix-*-matrix [m n]
-  (let [cols (transpose n)]
-    (map (fn [row] (map #(dot-product row %) cols)) m)))
+(defn  =number? [exp num]
+  (and (number? exp) (= exp num)))
 
-(defn transpose [m]
-  (accumulate-n cons nil m))
+(defn make-sum [a1 a2]
+  (cond (=number? a1 0) a2
+        (=number? a2 0) a1
+        (and (number? a1) (number? a2)) (+ a1 a2)
+        :else (list '+ a1 a2)))
+
+(defn make-product [m1 m2]
+  (cond (or (=number? m1 0) (=number? m2 0)) 0
+        (=number? m1 1) m2
+        (=number? m2 1) m1
+        (and (number? m1) (number?)) (* m1 m2)
+        :else (list '* m1 m2)))
+(defn sum? [x]
+  (and (seq? x) (= (first x) '+)))
+
+(defn addend [x] (first (rest x)))
+(defn augend [x] (first (rest (rest x))))
+(defn product? [x]
+  (and (seq? x) (= (first x) '*)))
+(defn multiplier [p] (first (rest p)))
+(defn multiplicand [p] (first (rest (rest p))))
+
+(defn exponentiation? [x]
+  (and (seq? x) (= (first x) '**)))
+
+(defn base [x] (= first (rest x)))
+(defn exponent [x] (= first (rest (rest x))))
+
+(defn make-exponentiation [e x]
+  (cond (=number? x 0) 1
+        (=number? x 1) e
+        :else (list '** e x)))
+
+(defn deriv [exp var]
+  (cond (number? exp) 0
+        (variable? exp)
+        (if (same-variable? exp var) 1 0)
+        (sum? exp)
+        (make-sum (deriv (addend exp) var)
+                  (deriv (augend exp) var))
+        (product? exp)
+        (make-sum
+         (make-product (multiplier exp)
+                       (deriv (multiplicand exp) var))
+         (make-product (deriv (multiplier exp) var)
+                       (multiplicand exp)))
+        (exponentiation? exp)
+        (make-product
+         (make-product (exponent exp) (make-exponentiation (base exp) (- (exponent exp) 1))
+         (deriv (base exp) var))
+        :else (throw (Exception. "my exception message"))))
 
