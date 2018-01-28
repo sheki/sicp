@@ -722,10 +722,10 @@ failed-protagonist-names
         :else (union-set (rest set1) set2)))
 
 (defn element-of-set2? [x set]
-                        (cond (empty set) false
-                              (= x (first set)) true
-                              (< x (rest set)) false
-                              :else (element-of-set? x (rest set))))
+  (cond (empty set) false
+        (= x (first set)) true
+        (< x (rest set)) false
+        :else (element-of-set? x (rest set))))
 
 (defn adjoin-set [x set]
   (if (element-of-set? x set)
@@ -740,8 +740,79 @@ failed-protagonist-names
         :else (cons (first s2) (union-set2 s1 (rest s2)))))
 
 (defn entry [tree] (first tree))
-(defn left-branch tree (first (rest tree)))
-(defn right-branch tree) (first (rest (rest tree)))
-(defn make-tree entry [left right]
+(defn left-branch [tree] (first (rest tree)))
+(defn right-branch [tree] (first (rest (rest tree))))
+(defn make-tree [entry left right]
   (list entry left right))
 
+(defn make-leaf [symbol weight]
+  (list 'leaf symbol weight))
+
+(defn symbol-leaf [x] (second x))
+(defn weight-leaf [x] (nth  x 2))
+
+(defn leaf? [object]
+  (= (first object) 'leaf))
+
+(defn weight [tree]
+  (if (leaf? tree)
+    (weight-leaf tree)
+    (nth tree 3)))
+
+(defn left-branch [tree] (first tree))
+
+(defn right-branch [tree] (nth tree 1))
+(defn symbols [tree]
+  (if (leaf? tree)
+    (list (symbol-leaf tree))
+    (nth tree 2)))
+(defn weight [tree]
+  (if (leaf? tree)
+    (weight-leaf tree)
+    (nth tree 3)))
+
+(defn make-code-tree [left right]
+  (list left
+        right
+        (conj (symbols left) (symbols right))
+        (+ (weight left) (weight right))))
+
+(defn choose-branch [bit branch]
+  (cond (= bit 0) (left-branch branch)
+        (= bit 1) (right-branch branch)
+        :else (throw "bad bit -- CHOOSE-BRANCH")))
+
+(defn decode [bits tree]
+  (defn decode-1 [bits current-branch]
+    (if (empty? bits)
+      '()
+      (let [next-branch
+            (choose-branch (first bits) current-branch)]
+        (if (leaf? next-branch)
+          (cons (symbol-leaf next-branch)
+                (decode-1 (rest bits) tree))
+          (decode-1 (rest bits) next-branch)))))
+  (decode-1 bits tree))
+
+(defn adjoin-set-huff [x set]
+  (cond (empty? set) (list
+                      (< (weight x) (weight (car set))) (cons x set)
+                      :else (cons (car set)
+                                  (adjoin-set-huff x (first set))))))
+
+(defn make-leaf-set [pairs]
+  (if (empty? pairs)
+    '()
+    (let [pair (first pairs)]
+      (adjoin-set-huff (make-leaf (first pair)    ; symbol
+                                  (second pair))  ; frequency
+                       (make-leaf-set (rest pairs))))))
+
+(def sample-tree
+  (make-code-tree (make-leaf 'A 4)
+                  (make-code-tree
+                   (make-leaf 'B 2)
+                   (make-code-tree (make-leaf 'D 1)
+                                   (make-leaf 'C 1)))))
+
+(def sample-message '(0 1 1 0 0 1 0 1 0 1 1 1 0))
