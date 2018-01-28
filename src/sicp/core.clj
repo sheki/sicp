@@ -816,3 +816,22 @@ failed-protagonist-names
                                    (make-leaf 'C 1)))))
 
 (def sample-message '(0 1 1 0 0 1 0 1 0 1 1 1 0))
+
+(defn contains? [l n]
+  (if (empty? l) false
+      (or (= (first l) n) (contains? (rest l) n))))
+
+(defn encode-symbol [symbol node]
+  (do (println (symbols node)) (println "left " (symbols (left-branch node)))
+      (println "right " (symbols (right-branch node)))
+      (cond (and (leaf? node) (= (symbol-leaf node) symbol)) '()
+            (contains? (symbols (left-branch node)) symbol) (cons 0 (encode-symbol (left-branch node) node))
+            (contains? (symbols (right-branch node)) symbol) (cons 1 (encode-symbol (right-branch node) node))
+            :else (throw (Exception. "what")))))
+
+(defn encode [message tree]
+  (if (empty? message)
+    '()
+    (conj (encode-symbol (first message) tree)
+          (encode (rest message) tree))))
+
