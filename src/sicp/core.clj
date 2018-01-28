@@ -700,6 +700,48 @@ failed-protagonist-names
         (exponentiation? exp)
         (make-product
          (make-product (exponent exp) (make-exponentiation (base exp) (- (exponent exp) 1))
-         (deriv (base exp) var))
-        :else (throw (Exception. "my exception message"))))
+                       (deriv (base exp) var))
+         :else (throw (Exception. "my exception message")))))
+
+  ;2.59
+(defn element-of-set? [x set]
+  (cond (empty? set) false
+        (= x (first set)) true
+        :else (element-of-set? x (rest set)))) (defn intersection-set [set1 set2]
+                                                 (cond (or (empty? set1) (empty? set2)) '()
+                                                       (element-of-set? (first set1) set2)
+                                                       (cons (first set1)
+                                                             (intersection-set (rest set1) set2))
+                                                       :else (intersection-set (rest set1) set2)))
+
+(defn union-set [set1 set2]
+  (cond (empty? set1) set2
+        (not (element-of-set? (first set1) set2))
+        (cons (first set1)
+              (union-set (rest set1) set2))
+        :else (union-set (rest set1) set2)))
+
+(defn element-of-set2? [x set]
+                        (cond (empty set) false
+                              (= x (first set)) true
+                              (< x (rest set)) false
+                              :else (element-of-set? x (rest set))))
+
+(defn adjoin-set [x set]
+  (if (element-of-set? x set)
+    set
+    (cons x set)))
+
+(defn union-set2 [s1 s2]
+  (cond (empty? s1) s2
+        (empty? s2) s1
+        (= (first s1) (first s2)) (cons (first s1) (union-set2 (rest s1) (rest s2)))
+        (< (first s1) (first s2)) (cons (first s1) (union-set2 (rest s1) s2))
+        :else (cons (first s2) (union-set2 s1 (rest s2)))))
+
+(defn entry [tree] (first tree))
+(defn left-branch tree (first (rest tree)))
+(defn right-branch tree) (first (rest (rest tree)))
+(defn make-tree entry [left right]
+  (list entry left right))
 
